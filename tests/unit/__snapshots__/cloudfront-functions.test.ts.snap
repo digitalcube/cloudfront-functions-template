@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`unit test for the stack Should match snapshot 1`] = `
+Object {
+  "Resources": Object {
+    "ViewerRequestFunctiondevelopment": Object {
+      "Properties": Object {
+        "AutoPublish": false,
+        "FunctionCode": "function handler(event) {
+    var request = event.request;
+    return request;
+}",
+        "FunctionConfig": Object {
+          "Comment": "empty function (boiler plate)",
+          "Runtime": "cloudfront-js-1.0",
+        },
+        "Name": "ViewerRequestFunction-development",
+      },
+      "Type": "AWS::CloudFront::Function",
+    },
+    "ViewerResponseFunctiondevelopment": Object {
+      "Properties": Object {
+        "AutoPublish": false,
+        "FunctionCode": "function handler(event) {
+    var response = event.response;    
+    // Set HTTP security headers
+    response.headers['strict-transport-security'] = { value: 'max-age=63072000'}; 
+    response.headers['x-content-type-options'] = { value: 'nosniff'}; 
+    response.headers['x-frame-options'] = {value: 'SAMEORIGIN'}; 
+    response.headers['x-xss-protection'] = {value: '1; mode=block'}; 
+    return response;
+  }",
+        "FunctionConfig": Object {
+          "Comment": "Add easing security header and set redirection of s3 object uuid removing",
+          "Runtime": "cloudfront-js-1.0",
+        },
+        "Name": "ViewerResponseFunction-development",
+      },
+      "Type": "AWS::CloudFront::Function",
+    },
+  },
+}
+`;

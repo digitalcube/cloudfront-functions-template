@@ -1,0 +1,36 @@
+{
+  "name": "cloudfront-functions",
+  "version": "0.1.0",
+  "bin": {
+    "cloudfront-functions": "bin/cloudfront-functions.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "test:e2e": "jest -c jest.config.e2e.js",
+    "test:e2e:prod": "STAGE=production jest -c jest.config.e2e.js",
+    "cdk": "cdk",
+    "deploy": "cdk deploy --progress events",
+    "deploy:prod": "STAGE=production cdk deploy --progress events",
+    "publish-function": "ts-node --prefer-ts-exts bin/publish_function.ts",
+    "publish-function:prod": "STAGE=production ts-node --prefer-ts-exts bin/publish_function.ts"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "1.107.0",
+    "@types/jest": "^26.0.10",
+    "@types/node": "10.17.27",
+    "aws-cdk": "1.107.0",
+    "jest": "^26.4.2",
+    "ts-jest": "^26.2.0",
+    "ts-node": "^9.0.0",
+    "typescript": "~3.9.7"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudfront": "^1.107.0",
+    "@aws-cdk/core": "1.107.0",
+    "aws-sdk": "^2.922.0",
+    "cff-tools": "0.*.*",
+    "source-map-support": "^0.5.16"
+  }
+}

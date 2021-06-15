@@ -1,0 +1,199 @@
+version: 2.1
+
+executors:
+  custom-executor:
+    # https://circleci.com/docs/2.0/circleci-images/
+    # https://circleci.com/docs/2.0/docker-image-tags.json
+    docker:
+      - image: cimg/node:15.1
+    working_directory: ~/repo
+
+commands:
+  setup_aws:
+    steps:
+      - run:
+          name: Set AWS Credentials
+          command: |
+            mkdir ~/.aws
+            echo [default] > ~/.aws/credentials
+            echo aws_access_key_id = $AWS_ACCESS_KEY_ID >> ~/.aws/credentials
+            echo aws_secret_access_key = $AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
+            echo [default] > ~/.aws/config
+            echo region = us-east-1 >> ~/.aws/config
+  restore:
+    steps:
+      - restore_cache:
+          key: CircleCIDeploy-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+  save:
+    steps:
+      - save_cache:
+          paths:
+            - "node_modules"
+          key: CircleCIDeploy-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+jobs:
+  setup:
+    executor: custom-executor
+    steps:
+      - checkout
+      - restore
+      - run:
+          name: install packages
+          command: yarn
+      - save
+
+  e2e:
+    executor: custom-executor
+    parameters:
+      env:
+        type: enum
+        enum: ["production", "development"]
+    steps:
+      - checkout
+      - restore
+      - setup_aws
+      - run: echo Env is << parameters.env >>
+      - run:
+          name: E2E test
+          command: STAGE=<< parameters.env >> yarn test:e2e
+
+  publish:
+    executor: custom-executor
+    parameters:
+      env:
+        type: enum
+        enum: ["production", "development"]
+    steps:
+      - checkout
+      - restore
+      - setup_aws
+      - run: echo Env is << parameters.env >>
+      - run:
+          name: Publish these functions
+          command: STAGE=<< parameters.env >> yarn publish-function
+  
+
+  deploy:
+    executor: custom-executor
+    parameters:
+      env:
+        type: enum
+        enum: ["production", "development"]
+    steps:
+      - checkout
+      - restore
+      - setup_aws
+      - run: echo Env is << parameters.env >>
+      - run:
+          name: Build
+          command: yarn build
+      - run:
+          name: Deploy to development env
+          command: STAGE=<< parameters.env >> yarn deploy
+  
+  test:
+    executor: custom-executor
+    steps:
+      - checkout
+      - restore
+      - run:
+          name: Run Tests
+          command: yarn test
+      - run:
+          name: Build
+          command: yarn build
+
+workflows:
+  testing:
+    jobs:
+      - setup:
+          filters:
+            branches:
+              ignore:
+                - development
+                - main
+      - test:
+          requires:
+            - setup
+          filters:
+            branches:
+              ignore:
+                - development
+                - main
+  release-prod:
+    jobs:
+      - setup:
+          filters:
+            branches:
+              only:
+                - main
+      - test:
+          requires:
+            - setup
+          filters:
+            branches:
+              only:
+                - main
+      - deploy:
+          env: production
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - main
+      - e2e:
+          env: production
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - main
+      - publish:
+          env: production
+          requires:
+            - e2e
+          filters:
+            branches:
+              only:
+                - main
+  release-dev:
+    jobs:
+      - setup:
+          filters:
+            branches:
+              only:
+                - development
+      - test:
+          requires:
+            - setup
+          filters:
+            branches:
+              only:
+                - development
+      - deploy:
+          env: development
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - development
+      - e2e:
+          env: development
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - development
+      - publish:
+          env: development
+          requires:
+            - e2e
+          filters:
+            branches:
+              only:
+                - development
