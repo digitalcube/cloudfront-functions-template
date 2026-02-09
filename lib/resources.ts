@@ -1,17 +1,27 @@
-import { Function } from 'cff-tools';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const stage = process.env.STAGE || 'development'
-export const ViewerRequestFunction = new Function({
-  name: 'ViewerRequestFunction-' + stage,
-  runtime: 'cloudfront-js-1.0'
-}, {
-    functionFilePath: join(__dirname, '../functions/viewer_reqeust.js')
+type CloudFrontFunctionDefinition = {
+  name: string;
+  runtime: 'cloudfront-js-1.0';
+  functionFilePath: string;
+  getFunctionCode: () => string;
+}
+
+const createFunctionDefinition = (baseName: string, functionFilePath: string): CloudFrontFunctionDefinition => ({
+  name: `${baseName}-${stage}`,
+  runtime: 'cloudfront-js-1.0',
+  functionFilePath,
+  getFunctionCode: () => readFileSync(functionFilePath, 'utf8')
 })
 
-export const ViewerResponseFunction = new Function({
-  name: 'ViewerResponseFunction-' + stage,
-  runtime: 'cloudfront-js-1.0'
-}, {
-    functionFilePath: join(__dirname, '../functions/viewer_response.js')
-})
+export const ViewerRequestFunction = createFunctionDefinition(
+  'ViewerRequestFunction',
+  join(__dirname, '../functions/viewer_request.js')
+)
+
+export const ViewerResponseFunction = createFunctionDefinition(
+  'ViewerResponseFunction',
+  join(__dirname, '../functions/viewer_response.js')
+)

@@ -15,6 +15,8 @@ We can do...
 
 ### Setup
 
+Node.js 20 LTS is required.
+
 ```
 % git clone git@github.com:digitalcube/cloudfront-functions-template.git
 % cd cloudfront-functions-template
@@ -76,6 +78,12 @@ $ yarn deploy
 ### Testing function (E2E)
 
 Call CloudFront.TestFunction API and check the response by using Jest.
+
+Requires AWS credentials in env:
+
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KEY
+- AWS_SESSION_TOKEN (optional)
 
 ```bash
 $ yarn test:e2e

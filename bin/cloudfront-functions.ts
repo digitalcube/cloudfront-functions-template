@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
 import { CloudfrontFunctionsStack } from '../lib/cloudfront-functions-stack';
 
-const app = new cdk.App();
+const app = new App();
 const stage = process.env.STAGE || 'development'
 new CloudfrontFunctionsStack(app, 'CloudfrontFunctionsStack-' + stage, {
   /* If you don't specify 'env', this stack will be environment-agnostic.

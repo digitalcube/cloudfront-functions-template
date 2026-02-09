@@ -5,7 +5,7 @@ executors:
     # https://circleci.com/docs/2.0/circleci-images/
     # https://circleci.com/docs/2.0/docker-image-tags.json
     docker:
-      - image: cimg/node:15.1
+      - image: cimg/node:20.11
     working_directory: ~/repo
 
 commands:
@@ -88,6 +88,9 @@ jobs:
       - run:
           name: Build
           command: yarn build
+      - run:
+          name: CDK synth
+          command: STAGE=development yarn cdk synth
       - run:
           name: Deploy to development env
           command: STAGE=<< parameters.env >> yarn deploy

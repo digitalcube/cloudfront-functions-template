@@ -1,9 +1,10 @@
-import { CfnFunction } from '@aws-cdk/aws-cloudfront';
-import * as cdk from '@aws-cdk/core';
+import { CfnFunction } from 'aws-cdk-lib/aws-cloudfront';
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { ViewerRequestFunction, ViewerResponseFunction } from './resources'
 
-export class CloudfrontFunctionsStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class CloudfrontFunctionsStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
     const stage = process.env.STAGE || 'development'
 
