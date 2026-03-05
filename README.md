@@ -1,5 +1,9 @@
 Simply CDK stack template with CI / CD pipeline on CircleCI.
 
+> **注意:** このリポジトリは現在使用していません。CloudFront Function テンプレートの管理は以下のリポジトリで行っています。
+>
+> https://github.com/digitalcube/cloudfront-functions
+
 ## Features
 We can do...
 
